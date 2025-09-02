@@ -1,0 +1,289 @@
+{
+  "name": "Product Advertisement via Image Creation",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Advertise Image Generator ",
+        "formDescription": "Convert simple product images to High Quality Advertisment Images ",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Product Image",
+              "fieldType": "file",
+              "acceptFileTypes": ".jpg, .png",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Character Image",
+              "fieldType": "file",
+              "acceptFileTypes": ".jpg, .png",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Style",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Natural Setting"
+                  },
+                  {
+                    "option": "Lifestyle Setting"
+                  },
+                  {
+                    "option": "Urban Environment"
+                  },
+                  {
+                    "option": "Studio Backdrop"
+                  },
+                  {
+                    "option": "Professional Photoshoot"
+                  },
+                  {
+                    "option": "Modern Context"
+                  },
+                  {
+                    "option": "Elegant Atmosphere"
+                  },
+                  {
+                    "option": "Dynamic Scene"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -688,
+        320
+      ],
+      "id": "4bb85121-511b-4bd3-8969-087bf91be1c7",
+      "name": "Advertise Image Generator",
+      "webhookId": "f33ea56c-84d9-4f86-9e19-42bb3194184c"
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "binaryPropertyName": "=Product_Image",
+        "destinationKey": "product image data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -432,
+        320
+      ],
+      "id": "09cf879a-e3e8-4a27-a31a-edb80658c69e",
+      "name": "Product Image Base64 String"
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "binaryPropertyName": "Character_Image",
+        "destinationKey": "character image data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        320
+      ],
+      "id": "2a181d01-5308-49b2-b7b6-8db2e0756102",
+      "name": "Character Image Base64 String"
+    },
+    {
+      "parameters": {
+        "jsCode": "const characterImageData = $input.all()[0]?.json[\"character image data\"];\nconst productImageData = $(\"Product Image Base64 String\").all()[0]?.json[\n  \"product image data\"\n];\n\nconst characterImageURL = `data:image/png;base64,${characterImageData}`;\nconst productImageURL = `data:image/png;base64,${productImageData}`;\n\nreturn { characterImageURL, productImageURL };\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        320
+      ],
+      "id": "b164b511-b308-433f-bb7b-205aa4c3ce69",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openRouterApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer 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"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n\"model\": \"google/gemini-2.5-flash-image-preview:free\",\n\"messages\": [\n{\n\"role\": \"user\",\n\"content\": [\n{\n\"type\": \"text\",\n\"text\": \"The first image conveys a model's overall style and aesthetic. The second image is a product. Generate a photorealistic image of a fashion model with a similar appearance to the first image actively using this product in a {{ $('Advertise Image Generator').item.json.Style }}. The model should look happy and engaged. Faithfully recreate the product's design, colors, and details from its reference image.\"\n},\n{\n\"type\": \"image_url\",\n\"image_url\": {\n\"url\": \"{{ $json.characterImageURL }}\"\n}\n},\n{\n\"type\": \"image_url\",\n\"image_url\": {\n\"url\": \"{{ $json.productImageURL }}\"\n}\n}\n]\n}\n]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        192,
+        320
+      ],
+      "id": "5610274e-8ad5-46d8-a04f-bf5b2eeefd89",
+      "name": "HTTP Request",
+      "credentials": {
+        "openRouterApi": {
+          "id": "dE7LfMKq87k9uhGD",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "754c71bf-3e75-4f25-8eda-3d31030bf1d1",
+              "name": "data",
+              "value": "={{ $json.choices[0].message.images[0].image_url.url }}",
+              "type": "string"
+            },
+            {
+              "id": "397ae157-18de-4ccf-88e0-822864d00b47",
+              "name": "base",
+              "value": "={{ $json.choices[0].message.images[0].image_url.url.split(\",\")[1] }}",
+              "type": "string"
+            },
+            {
+              "id": "f23fb669-5310-43b7-8cc7-2d63b4d6055b",
+              "name": "mime",
+              "value": "={{ $json.choices[0].message.images[0].image_url.url.split(\";\")[0].split(\":\")[1] }}",
+              "type": "string"
+            },
+            {
+              "id": "77abed9e-55d8-4240-bade-cd821a81f0ca",
+              "name": "filename",
+              "value": ".png",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        384,
+        320
+      ],
+      "id": "5ae98179-1d97-4a40-8a55-5cb20e4519a2",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "base",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        592,
+        320
+      ],
+      "id": "8013005a-7a43-4308-b233-14d22bf902c1",
+      "name": "Convert to File"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Advertise Image Generator": {
+      "main": [
+        [
+          {
+            "node": "Product Image Base64 String",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Product Image Base64 String": {
+      "main": [
+        [
+          {
+            "node": "Character Image Base64 String",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Character Image Base64 String": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d17708de-9952-4dc1-9aad-51b409a4ca44",
+  "meta": {
+    "instanceId": "dbaed5f6931a38c71097aaed346fdbab677ae19b56d41bdb307f52f162ef5ad4"
+  },
+  "id": "XmJDs1UdRaQNfxxF",
+  "tags": []
+}
