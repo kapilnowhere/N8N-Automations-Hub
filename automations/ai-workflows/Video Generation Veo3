@@ -1,0 +1,552 @@
+{
+  "name": "Video Generation Veo3",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -560,
+        64
+      ],
+      "id": "d6b5aa61-0bac-41f2-bfd8-6787aad354b7",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1iOPHqY-ic5TFx9CTYPHL2BspyFMwTfNRQTxZywjy47Q",
+          "mode": "list",
+          "cachedResultName": "veo3 <> n8n automation",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iOPHqY-ic5TFx9CTYPHL2BspyFMwTfNRQTxZywjy47Q/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iOPHqY-ic5TFx9CTYPHL2BspyFMwTfNRQTxZywjy47Q/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "caption": "={{ $json.output[0].Caption }}",
+            "ideas": "={{ $json.output[0].Idea }}",
+            "environment": "={{ $json.output[0].Environment }}",
+            "production": "={{ $json.output[0].Status }}",
+            "id": "-Row()-1"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ideas",
+              "displayName": "ideas",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "caption",
+              "displayName": "caption",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "production",
+              "displayName": "production",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "environment",
+              "displayName": "environment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "final_output",
+              "displayName": "final_output",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -80,
+        64
+      ],
+      "id": "b87e005d-fd29-4c88-b9c1-967521f28ad1",
+      "name": "Log the Idea",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "9p3IdGrxwMuly2Ut",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "Use the tool to think about something. It will not obtain new information or change the database but just append the thought to the log. Use it when complex reasoning or some cache memory is needed."
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1,
+      "position": [
+        240,
+        352
+      ],
+      "id": "e929bab4-a228-4786-8456-0fee14d87e58",
+      "name": "Think"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Give me an idea about [a Young lady around 25 speaking to a camera and doing a Vlog through his selfie stick in indian crowded market talking about Vegetables how fresh they are and what fun to be in such market, in 2050]. ",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are an AI designed to generate 1 immersive, realistic idea based on a user-provided topic. Your output must be formatted as a JSON array (single line) and follow all the rules below exactly.\n\nRULES:\n\nOnly return 1 idea at a time.\n\nThe user will provide a key topic (e.g. “urban farming,” “arctic survival,” “street food in Vietnam”).\n\nThe Idea must:\n\nBe under 13 words.\n\nDescribe an interesting and viral-worthy moment, action, or event related to the provided topic.\n\nCan be as surreal as you can get, doesn't have to be real-world!\n\nInvolves a character.\n\nThe Caption must be:\n\nShort, punchy, and viral-friendly.\n\nInclude one relevant emoji.\n\nInclude exactly 12 hashtags in this order:\n** 4 topic-relevant hashtags\n** 4 all-time most popular hashtags\n** 4 currently trending hashtags (based on live research)\n\nAll hashtags must be lowercase.\n\nSet Status to \"for production\" (always).\n\nThe Environment must:\n\nBe under 20 words.\n\nMatch the action in the Idea exactly.\n\nClearly describe:\n\nWhere the event is happening (e.g. rooftop, jungle trail, city alley, frozen lake)\n\nKey visuals or background details (e.g. smoke rising, neon lights, fog, birds overhead)\n\nMain participants (e.g. farmer, cook, mechanic, rescue team, animal)\n\nStyle of scene (e.g. cinematic realism, handheld docu-style, aerial tracking shot, macro close-up)\n\nOk with fictional settings\n\nOUTPUT FORMAT (single-line JSON array):\n\n\n[\n  {\n    \"Caption\": \"Short viral title with emoji #4_topic_hashtags #4_all_time_popular_hashtags #4_trending_hashtags\",\n    \"Idea\": \"Short idea under 13 words\",\n    \"Environment\": \"Brief vivid setting under 20 words matching the action\",\n    \"Status\": \"for production\"\n  }\n]\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        -400,
+        64
+      ],
+      "id": "1ed06207-2d95-4deb-a9ca-e5a0487c82d8",
+      "name": "Ideas AI Agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Give me a Veo3 prompt for this idea:\n{{ $json.ideas }}\n\nThis is the environment:\n{{ $json.environment }}\n\n",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=SYSTEM PROMPT FOR GOOGLE VEO3 PROMPT AGENT\n\nYou are an AI agent that writes hyper-realistic, cinematic video prompts for Google VEO3. Each prompt should describe a short, vivid selfie-style video clip featuring one unnamed character speaking or acting in a specific moment. The final video should look like found footage or documentary-style film — grounded, realistic, and immersive.\n\nREQUIRED STRUCTURE (FILL IN THE BRACKETS BELOW):\n\n[Scene paragraph prompt here]\n\nMain character: [description of character]\nThey say: [insert one line of dialogue, fits the scene and mood].\nThey [describe a physical action or subtle camera movement, e.g. pans the camera, shifts position, glances around].\nTime of Day: [day / night / dusk / etc.]\nLens: [describe lens]\nAudio: (implied) [ambient sounds, e.g. lion growls, wind, distant traffic, birdsong]\nBackground: [brief restatement of what is visible behind them]\n\nRULES FOR PROMPT GENERATION\n\nSingle paragraph only, 750–1500 characters. No line breaks or headings.\n\nOnly one human character. Never give them a name.\n\nInclude one spoken line of dialogue and describe how it’s delivered.\n\nCharacter must do something physical, even if subtle (e.g. glance, smirk, pan camera).\n\nUse selfie-style framing. Always describe the lens, stock, and camera behavior.\n\nScene must feel real and cinematic — like a short clip someone might record on a stylized camera.\n\nAlways include the five key technical elements: Time of Day, Lens, Film Stock, Audio, and Background.\n\nDO NOT DO THIS:\n\nDon’t name the character.\n\nDon’t include more than one character. \n\nDon't include any special characters.\n\nDon’t describe subtitles or on-screen text.\n\nDon’t break the paragraph or use formatting.\n\nDon’t write vague or abstract scenes — always keep them grounded in physical detail."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        -576,
+        336
+      ],
+      "id": "c8153faf-0824-4af2-8d61-301e8100ad08",
+      "name": "Prompts AI Agent"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "[\n  {\n    \"Caption\": \"Diver Removes Nets Off Whale 🐋 #whalerescue #marinelife #oceanrescue #seahelpers #love #nature #instagood #explore #viral #savenature #oceanguardians #cleanoceans\",\n    \"Idea\": \"Diver carefully cuts tangled net from distressed whale in open sea\",\n    \"Environment\": \"Open ocean, sunlight beams through water, diver and whale, cinematic realism\",\n    \"Status\": \"for production\"\n  }\n]\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        96,
+        352
+      ],
+      "id": "243659a8-3710-40a9-b7f5-4d6e5c123b37",
+      "name": "Parser"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        352
+      ],
+      "id": "78d34aa4-fb92-4703-a838-3e893e55c0d8",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Y3HxtE7g2i9RgScE",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5cedc3de-6221-4d7e-a6c8-82f4cb9cf0e9",
+              "name": "PROJECT_ID",
+              "type": "string",
+              "value": "synthetic-style-470909-r8"
+            },
+            {
+              "id": "90019751-e2d5-4764-9bf9-e13916dcc528",
+              "name": "MODEL_VERSION",
+              "type": "string",
+              "value": "veo-3.0-generate-001"
+            },
+            {
+              "id": "67ab205c-82b3-4263-99c4-c906a0ca6ae9",
+              "name": "LOCATION",
+              "type": "string",
+              "value": "us-central1"
+            },
+            {
+              "id": "413415fb-60c5-4d0d-ac45-1e6178a55227",
+              "name": "TEXT_PROMPT",
+              "type": "string",
+              "value": "={{ $json.output }}"
+            },
+            {
+              "id": "bf0910e1-b757-4852-9341-a7792161f89b",
+              "name": "ACCESS_TOKEN",
+              "type": "string",
+              "value": "A0AS3H6Nx7sSgEwM_azl5QlMIpHDtRyyd2DHc6fn7TNrfNbUlbmQ5iFeGGYIwOOZOEG5wioPj0IjjkNsCb5YbXSEfpqTz-ErjpXTULjYtgwxyn4LxWxcyMAGhwB7Bop80T-ZebjBw6tj8rfK55EsQp65xwTElq-lin01v3hN5LPBhXMlKJlTq-OngYXEjLGHBl2s1A3V7Hee4Xmfu2AvuV8HUVyWYPmNZm-1z89fzCLPjIy-n2I0tDt3ZnxOSAK-CJ3afh6uxp2EuGx4M6EFLEQtfu4a1JJPajYH2IoRtolER1Iy_uiBstlsbtaGQj0_xrH9-r-2aHhdN3rXnRZXYaCgYKAZgSARISFQHGX2MiD_1XYor8VARKXJZ3fam2qw0362"
+            },
+            {
+              "id": "17954335-b96b-4813-9c4a-20817d675448",
+              "name": "API_ENDPOINT",
+              "type": "string",
+              "value": "us-central1-aiplatform.googleapis.com"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8425555a-dcdd-44b2-a9f4-80510a8fb1a8",
+      "name": "Setting",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -256,
+        336
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "response.videos[0].bytesBase64Encoded",
+        "options": {}
+      },
+      "id": "c1589dc1-3609-4283-8326-95c26af15175",
+      "name": "Convert to File",
+      "type": "n8n-nodes-base.convertToFile",
+      "position": [
+        96,
+        640
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://{{ $('Setting').item.json.API_ENDPOINT }}/v1/projects/{{ $('Setting').item.json.PROJECT_ID }}/locations/{{ $('Setting').item.json.LOCATION }}/publishers/google/models/{{ $('Setting').item.json.MODEL_VERSION }}:fetchPredictOperation\n",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Setting').item.json.ACCESS_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"operationName\": \"{{ $json.name }}\"\n}\n",
+        "options": {}
+      },
+      "id": "a03a0685-6f91-4165-8365-0e6f6b219cfb",
+      "name": "Vertex AI-fetch",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -128,
+        640
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "minutes"
+      },
+      "id": "0ccc6496-c7a4-4307-a13d-a0f5df7b85af",
+      "name": "Wait",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        -336,
+        640
+      ],
+      "typeVersion": 1.1,
+      "webhookId": "ca4136c0-182a-43e0-b234-079ffe826eea"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://{{ $json.API_ENDPOINT }}/v1/projects/{{ $json.PROJECT_ID }}/locations/{{ $json.LOCATION }}/publishers/google/models/{{ $json.MODEL_VERSION }}:predictLongRunning",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.ACCESS_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"endpoint\": \"projects/n8n-project-440404/locations/us-central1/publishers/google/models/veo-3.0-generate-preview\",\n  \"instances\": [\n    {\n      \"prompt\": {{ JSON.stringify($json.TEXT_PROMPT) }}\n    }\n  ],\n  \"parameters\": {\n    \"aspectRatio\": \"9:16\",\n    \"sampleCount\": 1,\n    \"durationSeconds\": \"8\",\n    \"personGeneration\": \"allow_all\",\n    \"addWatermark\": true,\n    \"includeRaiReason\": true,\n    \"generateAudio\": true\n  }\n}\n",
+        "options": {}
+      },
+      "id": "8e3ca175-a46b-47a7-a285-99ad1fa226bd",
+      "name": "Vertex AI-VEO",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -560,
+        640
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "content": "## Part 1: IdeaIgnite-Engine",
+        "height": 240,
+        "width": 1300,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -592,
+        -16
+      ],
+      "typeVersion": 1,
+      "id": "d259193f-7251-4cb9-ae3d-5b37e0e3ae1b",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Part 2: PromptPulse-Engine\n",
+        "height": 240,
+        "width": 1320,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -592,
+        272
+      ],
+      "typeVersion": 1,
+      "id": "de576652-30cf-4170-8613-dcb19edda80e",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Part 3: VidVortex-Engine\n",
+        "height": 240,
+        "width": 1320,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -592,
+        576
+      ],
+      "typeVersion": 1,
+      "id": "8718697b-3799-4fdd-9475-ca3ce3d7f9fb",
+      "name": "Sticky Note2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Ideas AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log the Idea": {
+      "main": [
+        [
+          {
+            "node": "Prompts AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "Ideas AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "Prompts AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ideas AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Log the Idea",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompts AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Setting",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Ideas AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Ideas AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Prompts AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Setting": {
+      "main": [
+        [
+          {
+            "node": "Vertex AI-VEO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        []
+      ]
+    },
+    "Vertex AI-fetch": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Vertex AI-fetch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vertex AI-VEO": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d7aa2cc7-51a2-49ef-b003-d36683209539",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "dbaed5f6931a38c71097aaed346fdbab677ae19b56d41bdb307f52f162ef5ad4"
+  },
+  "id": "VvjkP9VjC69XcAQh",
+  "tags": []
+}
